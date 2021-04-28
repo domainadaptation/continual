@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Primary Meta Tags -->
+    <title>Adapting ImageNet-scale models to complex distribution shifts with self-learning</title>
+    <meta name="title" content="Adapting ImageNet-scale models to complex distribution shifts with self-learning">
+    <meta name="description" content="Test-time adaptation with self-learning improves robustness of large-scale computer vision models on ImageNet-C, -R, and -A.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://metatags.io/">
+    <meta property="og:title" content="Adapting ImageNet-scale models to complex distribution shifts with self-learning">
+    <meta property="og:description" content="Test-time adaptation with self-learning improves robustness of large-scale computer vision models on ImageNet-C, -R, and -A.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://metatags.io/">
+    <meta property="twitter:title" content="Adapting ImageNet-scale models to complex distribution shifts with self-learning">
+    <meta property="twitter:description" content="Test-time adaptation with self-learning improves robustness of large-scale computer vision models on ImageNet-C, -R, and -A.">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+
+    <style>
+        .main {
+            font-family: 'IBM Plex Sans Condensed', sans-serif;
+        }
+
+        .code {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .row {
+            padding-bottom: 20px;
+        }
+
+        .a {
+            color: gainsboro;
+            font-family: 'IBM Plex Sans Condensed', sans-serif;
+        }
+
+        td {
+            padding: 0 15px;
+        }
+
+        p {
+            text-align: justify;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: none;">
+        \[
+
+        \renewcommand{\d}{{\bf{d}}}
+        \renewcommand{\b}{{\bf{b}}}
+        \newcommand{\J}{{\bf{J}}}
+        \newcommand{\A}{\bf{A}}
+        \newcommand{\B}{\bf{B}}
+        \newcommand{\RR}{\mathbf{R}}
+        \newcommand{\h}{{\bf{h}}}
+        \newcommand{\x}{{\bf{x}}}
+        \newcommand{\bfa}{{\bf{a}}}
+        \newcommand{\bfb}{{\bf{b}}}
+        \newcommand{\bfc}{{\bf{c}}}
+        \newcommand{\y}{{\bf{y}}}
+        \newcommand{\z}{{\bf{z}}}
+        \newcommand{\w}{{\bf{w}}}
+        \newcommand{\f}{{\bf{f}}}
+        \newcommand{\tf}{{\bf{\tilde f}}}
+        \newcommand{\tx}{{\bf{\tilde x}}}
+        \renewcommand{\d}{{\rm{d}}}
+        \newcommand{\s}{{\bf{s}}}
+        \newcommand{\g}{{\bf{g}}}
+        \newcommand{\W}{{\bf{W}}}
+        \newcommand{\vol}{{\operatorname{vol}}}
+        \newcommand{\zz}{\mathbf{z}}
+        \newcommand{\xx}{\mathbf{x}}
+        \newcommand{\bdelta}{\bm{\delta}}
+        \renewcommand{\H}{\mathbf{H}}
+        \newcommand{\txx}{{\tilde{\mathbf{x}}}}
+        \newcommand{\tzz}{{\tilde{\mathbf{z}}}}
+        \newcommand{\tyy}{{\tilde{\mathbf{y}}}}
+        \newcommand{\invf}{f^{-1}}
+        \newcommand{\Sp}{\mathbb{S}}
+        \]
+    </div>
+
+    <div class="container main">
+        <div class="row">
+            <div class="col-sm-2">
+            </div>
+            <div class="col-sm-8" id="main-content">
+                <div class="row text-center my-5" id="#">
+                    <h1>2 CENTs on continual adaptation: replay & parameter buffers stabilize entropy minimization</h1>
+                </div>
+
+                <!-- Begin author list-->
+                <div class="row text-center mb-4">
+                    <div class="col-sm-3  mb-3">
+                        Ori Press
+                        <a href="mailto:ori.press@bethgelab.org"><i class="far fa-envelope"></i></a>
+                        <a href="https://oripress.com" target="_blank"><i class="fas fa-link"></i></a>
+                        </br>
+                        University of Tübingen & <nobr>IMPRS-IS</nobr>
+                    </div>
+                    <div class="col-sm-3 mb-3">
+                        Steffen Schneider
+                        <a href="mailto:steffen@bethgelab.org"><i class="far fa-envelope"></i></a>
+                        <a href="https://stes.io" target="_blank"><i class="fas fa-link"></i></a>
+                        </br>
+                        University of Tübingen & <nobr>IMPRS-IS</nobr> & EPFL
+                    </div>
+                    <div class="col-sm-3 mb-3">
+                        Matthias Kümmerer
+                        <a href="mailto:matthias.kuemmerer@bethgelab.org"><i class="far fa-envelope"></i></a>
+                        </br>
+                        University of Tübingen
+                    </div>
+                    <div class="col-sm-3  mb-3">
+                        Matthias Bethge
+                        <a href="http://bethgelab.org" target="_blank"><i class="fas fa-link"></i></a><br>
+                        University of Tübingen
+                    </div>
+                </div>
+                <!-- End author list-->
+
+                <div class="row text-center">
+                    <div class="col-sm-4 mb-4">
+                        <h4>
+                            <a class="btn-link disabled" href="#" target="_blank">
+                                <i class="fas fa-file-alt"></i>
+                                Paper
+                                <small>(soon!)</small>
+                            </a>
+                        </h4>
+                    </div>
+                    <div class="col-sm-4 mb-4">
+                        <h4>
+                            <a class="btn-link" href="https://github.com/shift-happens-benchmark/icml-2022/pull/50" target="_blank">
+                                <i class="far fa-chart-bar"></i>
+                                Dataset
+                            </a>
+                        </h4>
+                    </div>
+                    <div class="col-sm-4 mb-4">
+                        <h4>
+                            <a class="btn-link disabled" href="#" target="_blank">
+                            <i class="fab fa-github"></i>
+                                Code
+                                <small>(soon!)</small>
+                            </a>
+                        </h4>
+                    </div>
+                </div>
+
+                <div class="row text-center">
+                    <p>
+                        <b>tl;dr:</b>
+                        <span class="text-muted">
+                            Stable test-time adaptation over long time scales and continual distribution shift.
+                        </span>
+                    </p>
+                </div>
+
+                <div class="row mt-2">
+                    <h3>News</h3>
+                </div>
+
+                <div class="row">
+                    <table>
+                        <tr>
+                            <td class="mr-10">
+                                <span class="badge badge-pill badge-primary">July '22</span>
+                            </td>
+                            <td>
+                                Our dataset for Continuosly Changing Corruptions (CCC) was accepted into the Shift Happens workshop at ICML'22.
+                                We are currently working on the integration, and you can find the current code base in the
+                                <a href="https://github.com/shift-happens-benchmark/icml-2022/pull/50" target="_blank">Shift Happens</a>
+                                repository.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="badge badge-pill badge-primary">June '22</span>
+                            </td>
+                            <td>
+                                A preliminary version of our paper was accepted at the <a href="https://sites.google.com/view/icml-2022-pods" target="_blank"></a>Principles of Distribution Shift (PODS) workshop at ICML 2022</a>!
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="row mt-2">
+                    <h3>Abstract</h3>
+                </div>
+                <div class="row">
+                    <p>
+                        We propose continual entropy minimization (CENT) to adapt computer vision models to continual distribution shifts at ImageNet scale. CENT leverages a replay buffer with images from the source distribution along with rolling parameter buffers to stabilize the training dynamics of conventional test-time adaptation methods. Our work is the first to demonstrate stable, continual adaptation on ImageNet scale, and obtains state-of-the-art results in both static and continual variants of the ImageNet-C benchmark.
+                    </p>
+                </div>
+
+                <div class="row">
+                    <small class="text-muted">Webpage designed using Bootstrap 4.5.</small>
+                    <a href="#" class="ml-auto"><i class="fas fa-sort-up"></i></a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
