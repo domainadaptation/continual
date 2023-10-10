@@ -7,21 +7,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Primary Meta Tags -->
-    <title>CENT: Continual Entropy Minimization</title>
-    <meta name="title" content="CENT: Continual Entropy Minimization">
+    <title>RDumb: A simple approach that questions our progress in continual test-time adaptation</title>
+    <meta name="title" content="RDumb: A simple approach that questions our progress in continual test-time adaptation">
     <meta name="description" content="Stable test-time adaptation over long time scales and continual distribution shift.">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://domainadaptation.org/continual/">
-    <meta property="og:title" content="CENT: Continual Entropy Minimization">
+    <meta property="og:title" content="RDumb: A simple approach that questions our progress in continual test-time adaptation">
     <meta property="og:description" content="Stable test-time adaptation over long time scales and continual distribution shift.">
     <meta property="og:image" content="">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://domainadaptation.org/continual/">
-    <meta property="twitter:title" content="CENT: Continual Entropy Minimization">
+    <meta property="twitter:title" content="RDumb: A simple approach that questions our progress in continual test-time adaptation">
     <meta property="twitter:description" content="Stable test-time adaptation over long time scales and continual distribution shift.">
     <meta property="twitter:image" content="">
 
@@ -109,7 +109,7 @@
             </div>
             <div class="col-sm-8" id="main-content">
                 <div class="row text-center my-5" id="#">
-                    <h1>2 CENTs on continual adaptation: replay & parameter buffers stabilize entropy minimization</h1>
+                    <h1>RDumb: A simple approach that questions our progress in continual test-time adaptation</h1>
                 </div>
 
                 <!-- Begin author list-->
@@ -145,16 +145,15 @@
                 <div class="row text-center">
                     <div class="col-sm-4 mb-4">
                         <h4>
-                            <a class="btn-link disabled" href="#" target="_blank">
+                            <a class="btn-link" href="https://arxiv.org/abs/2306.05401" target="_blank">
                                 <i class="fas fa-file-alt"></i>
                                 Paper
-                                <small>(soon!)</small>
                             </a>
                         </h4>
                     </div>
                     <div class="col-sm-4 mb-4">
                         <h4>
-                            <a class="btn-link" href="https://github.com/shift-happens-benchmark/icml-2022/pull/50" target="_blank">
+                            <a class="btn-link" href="https://github.com/oripress/CCC" target="_blank">
                                 <i class="far fa-chart-bar"></i>
                                 Dataset
                             </a>
@@ -162,10 +161,9 @@
                     </div>
                     <div class="col-sm-4 mb-4">
                         <h4>
-                            <a class="btn-link disabled" href="#" target="_blank">
+                            <a class="btn-link disabled" href="https://github.com/oripress/CCC" target="_blank">
                             <i class="fab fa-github"></i>
                                 Code
-                                <small>(soon!)</small>
                             </a>
                         </h4>
                     </div>
@@ -186,6 +184,14 @@
 
                 <div class="row">
                     <table>
+                        <tr>
+                            <td class="mr-10">
+                                <span class="badge badge-pill badge-primary">September '23</span>
+                            </td>
+                            <td>
+                                Our paper was accepted at NeurIPS 2023. See you in New Orleans!
+                            </td>
+                        </tr>
                         <tr>
                             <td class="mr-10">
                                 <span class="badge badge-pill badge-primary">July '22</span>
@@ -213,7 +219,7 @@
                 </div>
                 <div class="row">
                     <p>
-                        We propose continual entropy minimization (CENT) to adapt computer vision models to continual distribution shifts at ImageNet scale. CENT leverages a replay buffer with images from the source distribution along with rolling parameter buffers to stabilize the training dynamics of conventional test-time adaptation methods. Our work is the first to demonstrate stable, continual adaptation on ImageNet scale, and obtains state-of-the-art results in both static and continual variants of the ImageNet-C benchmark.
+                        Test-Time Adaptation (TTA) allows to update pretrained models to changing data distributions at deployment time. While early work tested these algorithms for individual fixed distribution shifts, recent work proposed and applied methods for continual adaptation over long timescales. To examine the reported progress in the field, we propose the Continuously Changing Corruptions (CCC) benchmark to measure asymptotic performance of TTA techniques. We find that eventually all but one state-of-the-art methods collapse and perform worse than a non-adapting model, including models specifically proposed to be robust to performance collapse. In addition, we introduce a simple baseline, "RDumb", that periodically resets the model to its pretrained state. RDumb performs better or on par with the previously proposed state-of-the-art in all considered benchmarks. Our results show that previous TTA approaches are neither effective at regularizing adaptation to avoid collapse nor able to outperform a simplistic resetting strategy.
                     </p>
                 </div>
 
